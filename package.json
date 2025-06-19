@@ -1,0 +1,18 @@
+{
+  "name": "todo-list",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "npx @tailwindcss/cli -i ./css/input.css -o ./css/output.css --watch | tsc --watch",
+    "build": "npx @tailwindcss/cli -i ./css/input.css -o ./css/output.css  | tsc "
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "tailwindcss": "^4.1.10",
+    "typescript": "^5.8.3"
+  }
+}
