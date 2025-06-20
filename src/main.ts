@@ -1,11 +1,6 @@
-interface Task {
-  id: number;
-  text: string;
-  completed: boolean;
-  createdAt: Date;
-}
+import { Task_i, filters_t } from "../types/index";
 
-// DOM Elements
+//  HTML selectors
 const newTaskInput = document.getElementById(
   "newTaskInput"
 ) as HTMLInputElement;
@@ -23,18 +18,21 @@ const filterCompletedBtn = document.getElementById(
   "filterCompleted"
 ) as HTMLButtonElement;
 
-// State
-let tasks: Task[] = [];
-let currentFilter: "all" | "active" | "completed" = "all";
+//
+let tasks: Task_i[] = [];
+let currentFilter: filters_t = "all";
 
-// Initialize the app
+/*=============================================================================================*/
+// initialize the app handlers
+/*=============================================================================================*/
 function init() {
   loadTasks();
   renderTasks();
   setupEventListeners();
 }
-
-// Load tasks from localStorage
+/*=============================================================================================*/
+// loading tasks from localStorage
+/*=============================================================================================*/
 function loadTasks() {
   const savedTasks = localStorage.getItem("tasks");
   if (savedTasks) {
@@ -45,12 +43,16 @@ function loadTasks() {
   }
 }
 
-// Save tasks to localStorage
+/*=============================================================================================*/
+// save tasks to localStorage
+/*=============================================================================================*/
 function saveTasks() {
   localStorage.setItem("tasks", JSON.stringify(tasks));
 }
 
-// Setup event listeners
+/*=============================================================================================*/
+// setup event listeners
+/*=============================================================================================*/
 function setupEventListeners() {
   addTaskBtn.addEventListener("click", addTask);
   newTaskInput.addEventListener("keypress", (e) => {
@@ -66,10 +68,10 @@ function setupEventListeners() {
 
 // Add a new task
 function addTask() {
-  const text = newTaskInput.value.trim();
+  const text = newTaskInput.value;
   if (text === "") return;
 
-  const newTask: Task = {
+  const newTask: Task_i = {
     id: Date.now(),
     text,
     completed: false,
@@ -79,10 +81,13 @@ function addTask() {
   tasks.unshift(newTask);
   saveTasks();
   renderTasks();
+  // reset input after adding a note
   newTaskInput.value = "";
 }
 
-// Toggle task completion status
+/*=============================================================================================*/
+// toggle task completion status
+/*=============================================================================================*/
 function toggleTaskCompletion(id: number) {
   const task = tasks.find((task) => task.id === id);
   if (task) {
@@ -92,30 +97,42 @@ function toggleTaskCompletion(id: number) {
   }
 }
 
-// Delete a task
+/*=============================================================================================*/
+// delete a task
+/*=============================================================================================*/
 function deleteTask(id: number) {
   tasks = tasks.filter((task) => task.id !== id);
   saveTasks();
   renderTasks();
 }
 
-// Clear all completed tasks
+/*=============================================================================================*/
+// clear all completed tasks
+/*=============================================================================================*/
 function clearCompletedTasks() {
   tasks = tasks.filter((task) => !task.completed);
   saveTasks();
   renderTasks();
 }
 
-// Set the current filter
+/*=============================================================================================*/
+// updating the current filter
+/*=============================================================================================*/
 function setFilter(filter: "all" | "active" | "completed") {
   currentFilter = filter;
   updateFilterButtons();
   renderTasks();
 }
 
-// Update filter buttons appearance
+/*=============================================================================================*/
+// update filter buttons appearance
+/*=============================================================================================*/
 function updateFilterButtons() {
-  const buttons = [filterAllBtn, filterActiveBtn, filterCompletedBtn];
+  const buttons: HTMLElement[] = [
+    filterAllBtn,
+    filterActiveBtn,
+    filterCompletedBtn,
+  ];
   buttons.forEach((btn) => {
     btn.classList.remove("bg-indigo-600", "text-white");
     btn.classList.add("bg-gray-200", "hover:bg-gray-300");
@@ -132,19 +149,18 @@ function updateFilterButtons() {
   activeButton.classList.add("bg-indigo-600", "text-white");
 }
 
-// Render tasks based on current filter
+/*=============================================================================================*/
+// render tasks based on current filter
+/*=============================================================================================*/
 function renderTasks() {
-  // Filter tasks
   const filteredTasks = tasks.filter((task) => {
     if (currentFilter === "all") return true;
     if (currentFilter === "active") return !task.completed;
     return task.completed;
   });
 
-  // Clear the task list
   taskList.innerHTML = "";
 
-  // Add each task to the list
   filteredTasks.forEach((task) => {
     const taskItem = document.createElement("li");
     taskItem.className = `flex items-center justify-between p-3 mb-2 rounded-lg border border-gray-200 ${
@@ -180,16 +196,12 @@ function renderTasks() {
     taskList.appendChild(taskItem);
   });
 
-  // Update task counter
   const activeTasksCount = tasks.filter((task) => !task.completed).length;
-  taskCounter.textContent = `${activeTasksCount} tâche${
-    activeTasksCount !== 1 ? "s" : ""
-  } active${activeTasksCount !== 1 ? "s" : ""}`;
+  taskCounter.textContent = `${activeTasksCount} active tasks`;
 
-  // Show/hide clear completed button
   const hasCompletedTasks = tasks.some((task) => task.completed);
   clearCompletedBtn.style.display = hasCompletedTasks ? "block" : "none";
 }
 
-// Initialize the application
+// starting the app here
 init();
